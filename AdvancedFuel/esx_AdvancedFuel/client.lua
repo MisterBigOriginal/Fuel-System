@@ -247,22 +247,6 @@ Citizen.CreateThread(function()
 	end
 end)
 
-local wasInAVeh = false
-Citizen.CreateThread(function()
-
-	while true do
-		Citizen.Wait(0)
-		if(IsPedInAnyVehicle(GetPlayerPed(-1)) and GetPedVehicleSeat(GetPlayerPed(-1)) == -1 and not isBlackListedModel()) then
-			wasInAVeh = true
-		else
-			if(wasInAVeh) then
-				TriggerServerEvent("essence:setToAllPlayerEscense", essence, GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))))
-				wasInAVeh = false
-			end
-		end
-	end
-
-end)
 
 
 Citizen.CreateThread(function()
@@ -321,6 +305,7 @@ function CheckVeh()
 		refresh = false
 	else
 		if(not refresh) then
+			TriggerServerEvent("essence:setToAllPlayerEscense", essence, GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))))
 			refresh = true
 		end
 	end
@@ -585,8 +570,8 @@ AddEventHandler("essence:hasBuying", function(amount)
 		end
 	end
 
-	--local index = getVehIndex()
-	--vehiclesUsed[index].es = essence
+	TriggerServerEvent("essence:setToAllPlayerEscense", essence, GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))))
+
 
 	SetVehicleUndriveable(GetVehiclePedIsUsing(GetPlayerPed(-1)), false)
 	SetVehicleEngineOn(GetVehiclePedIsUsing(GetPlayerPed(-1)), true, false, false)
