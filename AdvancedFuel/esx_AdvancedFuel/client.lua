@@ -292,9 +292,9 @@ end)
 -- Donc 0.0001 km en moins toutes les 10 secondes
 
 local lastPlate = 0
-local refresh = false
+local refresh = true
 function CheckVeh()
-	if(IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not isBlackListedModel()) then
+	if(IsPedInAnyVehicle(GetPlayerPed(-1)) and not isBlackListedModel()) then
 
 		--if((lastPlate == GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))) and lastModel ~= GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1))))) or (lastPlate ~= GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))) and lastModel == GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1))))) or (lastPlate ~= GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))) and lastModel ~= GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1))))) then
 		if(refresh) then
@@ -305,7 +305,7 @@ function CheckVeh()
 		refresh = false
 	else
 		if(not refresh) then
-			TriggerServerEvent("essence:setToAllPlayerEscense", essence, GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))))
+			TriggerServerEvent("essence:setToAllPlayerEscense", essence, lastPlate, lastModel)
 			refresh = true
 		end
 	end

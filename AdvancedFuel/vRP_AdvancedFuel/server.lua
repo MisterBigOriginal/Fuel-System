@@ -4,9 +4,6 @@ local Proxy = module("vrp", "lib/Proxy")
 vRP = Proxy.getInterface("vRP")
 vRPclient = Tunnel.getInterface("vRP","vRP_fuel")
 
-randomPrice = true --Random the price of each stations
-price = 1 --If random price is on False, set the price here for 1 liter
-
 local players = {}
 local serverEssenceArray = {}
 local StationsPrice = {}
