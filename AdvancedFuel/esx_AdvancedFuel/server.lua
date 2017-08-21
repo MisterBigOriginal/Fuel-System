@@ -63,7 +63,7 @@ AddEventHandler("essence:buy", function(amount, index,e)
 	
 	local toPay = round(amount*price,2)
 	if(toPay > xPlayer.getMoney()) then
-		TriggerClientEvent("showNotif", _source, "~r~You don't have enought money.")
+		TriggerClientEvent("showErrorNotif", _source, "You don't have enought money.")
 	else
 		xPlayer.removeMoney(toPay)
 		TriggerClientEvent("essence:hasBuying", _source, amount)
@@ -110,7 +110,7 @@ AddEventHandler("essence:buyCan", function()
 
 	local toPay = petrolCanPrice
 	if(toPay > xPlayer.getMoney()) then
-		TriggerClientEvent("showNotif", _source, "~r~You don't have enought money.")
+		TriggerClientEvent("showErrorNotif", _source, "You don't have enought money.")
 	else
 		xPlayer.removeMoney(toPay)
 		TriggerClientEvent("essence:buyCan", _source)

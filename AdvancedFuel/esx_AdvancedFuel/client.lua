@@ -22,7 +22,7 @@ Citizen.CreateThread(function()
 				local nul, number = GetCurrentPedWeapon(GetPlayerPed(-1))
 
 				if(number == 883325847) then
-					Info(settings[lang].refuel)
+					Info(settings[lang].refeel)
 					if(IsControlJustPressed(1, 38)) then
 
 						RequestAnimDict("weapon@w_sp_jerrycan")
@@ -342,7 +342,7 @@ Citizen.CreateThread(function()
 				stade = 0.00005
 			elseif(vitesse >= 130) then
 				stade = 0.00006
-			else
+			elseif(vitesse == 0 and IsVehicleEngineOn(veh)) then
 				stade = 0.0000001
 			end
 
@@ -625,6 +625,7 @@ end)
 
 RegisterNetEvent("essence:hasBuying")
 AddEventHandler("essence:hasBuying", function(amount)
+	showDoneNotif(settings[lang].YouHaveBought..amount..settings[lang].fuel)
 	local amountToEssence = (amount/60)*0.142
 
 	local done = false
@@ -675,7 +676,7 @@ AddEventHandler("vehicule:sendFuel", function(bool, ess)
 	if(bool == 1) then
 		essence = ess
 	else
-		essence = (math.random(30,100)/100)*0.142
+		essence = (math.random(1,100)/100)*0.142
 		--table.insert(vehiclesUsed, {plate = GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), model = GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))), es = essence})
 		vehicle = GetVehiclePedIsUsing(GetPlayerPed(-1))
 		TriggerServerEvent("essence:setToAllPlayerEscense", essence, GetVehicleNumberPlateText(GetVehiclePedIsUsing(GetPlayerPed(-1))), GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsUsing(GetPlayerPed(-1)))))
