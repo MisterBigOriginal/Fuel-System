@@ -315,7 +315,7 @@ electric_stations = {
     {x=1696.633,y=4917.12,z=42.078},
     {x=1689.197,y=6435.085,z=32.559},
     {x=152.939,y=6629.043,z=31.717},
-    {-92.825,y=6393.375,z=31.452}
+    {x=-93.372,y=6394.018,z=31.452}
 }
 
 
@@ -521,6 +521,9 @@ end
 
 
 function DrawText3D(x,y,z, text) 
+
+
+
     local onScreen,_x,_y=World3dToScreen2d(x,y,z)
     local px,py,pz=table.unpack(GetGameplayCamCoords())
     local dist = GetDistanceBetweenCoords(px,py,pz, x,y,z, 1)

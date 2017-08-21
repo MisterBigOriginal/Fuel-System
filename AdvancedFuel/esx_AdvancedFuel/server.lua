@@ -89,6 +89,36 @@ AddEventHandler("vehicule:getFuel", function(plate,model)
 end)
 
 
+
+RegisterServerEvent("advancedFuel:setEssence_s")
+AddEventHandler("advancedFuel:setEssence_s", function(percent, vplate, vmodel)
+	local bool, ind = searchByModelAndPlate(vplate, vmodel)
+
+	local percentToEs = (percent/100)*0.142
+
+	if(bool) then
+		serverEssenceArray[ind].es = percentToEs
+	else
+		table.insert(serverEssenceArray,{plate=vplate,model=vmodel,es=percentToEs})
+	end
+end)
+
+RegisterServerEvent("essence:buyCan")
+AddEventHandler("essence:buyCan", function()
+	local _source = source
+	local xPlayer = ESX.GetPlayerFromId(_source)
+
+	local toPay = petrolCanPrice
+	if(toPay > xPlayer.getMoney()) then
+		TriggerClientEvent("showNotif", _source, "~r~You don't have enought money.")
+	else
+		xPlayer.removeMoney(toPay)
+		TriggerClientEvent("essence:buyCan", _source)
+	end
+end)
+
+
+
 function round(num, dec)
   local mult = 10^(dec or 0)
   return math.floor(num * mult + 0.5) / mult

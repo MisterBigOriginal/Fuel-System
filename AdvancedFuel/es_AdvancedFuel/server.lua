@@ -62,7 +62,7 @@ AddEventHandler("essence:buy", function(amount, index, e)
 	TriggerEvent("es:getPlayerFromId", _source,function(user)
 
 		local toPay = round(amount*price,2)
-		if(toPay > user.getMoney()) then
+		if(toPay >= user.getMoney()) then
 				TriggerClientEvent("showNotif", _source, "~r~You don't have enought money.")
 		else
 			user.removeMoney(toPay)
@@ -89,6 +89,36 @@ AddEventHandler("vehicule:getFuel", function(plate,model)
 	else
 		TriggerClientEvent("vehicule:sendFuel", _source, 0, 0)
 	end
+end)
+
+
+RegisterServerEvent("advancedFuel:setEssence_s")
+AddEventHandler("advancedFuel:setEssence_s", function(percent, vplate, vmodel)
+	local bool, ind = searchByModelAndPlate(vplate, vmodel)
+
+	local percentToEs = (percent/100)*0.142
+
+	if(bool) then
+		serverEssenceArray[ind].es = percentToEs
+	else
+		table.insert(serverEssenceArray,{plate=vplate,model=vmodel,es=percentToEs})
+	end
+end)
+
+RegisterServerEvent("essence:buyCan")
+AddEventHandler("essence:buyCan", function()
+	local _source = source
+	TriggerEvent("es:getPlayerFromId", _source,function(user)
+
+		local toPay = petrolCanPrice
+		if(toPay >= user.getMoney()) then
+				TriggerClientEvent("showNotif", _source, "~r~You don't have enought money.")
+		else
+			user.removeMoney(toPay)
+			TriggerClientEvent("essence:buyCan", _source)
+		end
+	end)
+
 end)
 
 

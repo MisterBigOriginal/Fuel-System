@@ -4,6 +4,7 @@ local lastModel = 0
 
 local vehiclesUsed = {}
 
+local currentCans = 0
 
 
 Citizen.CreateThread(function()
@@ -12,6 +13,69 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		CheckVeh()
 		renderBoxes()
+
+		if(currentCans > 0) then
+			local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1)))
+			local veh = GetClosestVehicle(x, y, z, 4.001, 0, 70)
+
+			if(veh ~= nil and GetVehicleNumberPlateText(veh) ~= nil) then
+				local nul, number = GetCurrentPedWeapon(GetPlayerPed(-1))
+
+				if(number == 883325847) then
+					Info(settings[lang].refeel)
+					if(IsControlJustPressed(1, 38)) then
+
+						RequestAnimDict("weapon@w_sp_jerrycan")
+						while not HasAnimDictLoaded("weapon@w_sp_jerrycan") do
+							Citizen.Wait(100)
+						end
+
+						local toPercent = essence/0.142
+						print(5000/toPercent)
+
+						TaskPlayAnim(GetPlayerPed(-1),"weapon@w_sp_jerrycan","fire", 8.0, -8, -1, 49, 0, 0, 0, 0)
+						local done = false
+						local amountToEssence = 0.142-essence
+						while done == false do
+							Wait(0)
+							local _essence = essence
+							if(amountToEssence-0.0005 > 0) then
+								amountToEssence = amountToEssence-0.0005
+								essence = _essence + 0.0005
+								_essence = essence
+								if(_essence > 0.142) then
+									essence = 0.142
+									TriggerEvent("advancedFuel:setEssence", 100, GetVehicleNumberPlateText(veh), GetDisplayNameFromVehicleModel(GetEntityModel(veh)))
+									done = true
+								end
+								SetVehicleUndriveable(veh, true)
+								SetVehicleEngineOn(veh, false, false, false)
+								local essenceToPercent = (essence/0.142)*65
+								SetVehicleFuelLevel(veh,round(essenceToPercent))
+								Wait(100)
+							else
+								essence = essence + amountToEssence
+								local essenceToPercent = (essence/0.142)*65
+								SetVehicleFuelLevel(veh,round(essenceToPercent))
+								TriggerEvent("advancedFuel:setEssence", 100, GetVehicleNumberPlateText(veh), GetDisplayNameFromVehicleModel(GetEntityModel(veh)))
+								done = true
+							end
+						end
+						TaskPlayAnim(GetPlayerPed(-1),"weapon@w_sp_jerrycan","fire_outro", 8.0, -8, -1, 49, 0, 0, 0, 0)
+						Wait(500)
+						ClearPedTasks(GetPlayerPed(-1))
+						currentCans = currentCans-1
+
+						if(currentCans == 0) then
+							RemoveWeaponFromPed(GetPlayerPed(-1),  0x34A67B97)
+						end
+						SetVehicleEngineOn(veh, true, false, false)
+						SetVehicleUndriveable(veh, false)
+					end
+				end
+			end
+		end
+
 	end
 
 end)
@@ -71,7 +135,7 @@ Citizen.CreateThread(function()
 				TriggerEvent("GUI:Update")
 			end
 		else
-			if(isNearFuelStation and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel()) then
+			if(isNearFuelStation and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel() and isElectricModel()) then
 				Info(settings[lang].electricError)
 			end
 		end
@@ -114,7 +178,7 @@ Citizen.CreateThread(function()
 				TriggerEvent("GUI:Update")
 			end
 		else
-			if(isNearElectricStation()  and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel()) then
+			if(isNearElectricStation()  and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel() and not isElectricModel()) then
 				Info(settings[lang].fuelError)
 			end
 		end
@@ -155,7 +219,7 @@ Citizen.CreateThread(function()
 				TriggerEvent("GUI:Update")
 			end
 		else
-			if(isNearFuelBStation  and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel()) then
+			if(isNearFuelBStation  and IsPedInAnyVehicle(GetPlayerPed(-1), -1) and not IsPedInAnyHeli(GetPlayerPed(-1)) and not isBlackListedModel() and isElectricModel()) then
 				Info(settings[lang].fuelError)
 			end
 		end
@@ -244,6 +308,14 @@ Citizen.CreateThread(function()
 			end
 		end
 
+		if((isNearFuelStation or isNearFuelPStation or isNearFuelHStation or isNearFuelBStation) and not IsPedInAnyVehicle(GetPlayerPed(-1))) then
+			Info(settings[lang].getJerryCan)
+
+			if(IsControlJustPressed(1, 38)) then
+				TriggerServerEvent("essence:buyCan")
+			end
+		end
+
 	end
 end)
 
@@ -323,19 +395,29 @@ function renderBoxes()
 	if(IsPedInAnyVehicle(GetPlayerPed(-1), -1) and GetPedVehicleSeat(GetPlayerPed(-1)) == -1 and not isBlackListedModel()) then
 
 		if(hud_form == 1) then
-			DrawRect(hud_x, hud_y, 0.0149999999999998, 0.15, 255, 255, 255, 200)
-			DrawRect(hud_x, hud_y, 0.0119999999999998, 0.142, 80, 80, 80, 255)
-			DrawRect(hud_x, hud_y, 0.0119999999999998, essence, 225, 146, 45, 255)
-			local percent = (essence/0.142)*100
+			if(showBar) then
+				DrawRect(hud_x, hud_y, 0.0149999999999998, 0.15, 255, 255, 255, 200)
+				DrawRect(hud_x, hud_y, 0.0119999999999998, 0.142, 80, 80, 80, 255)
+				DrawRect(hud_x, hud_y, 0.0119999999999998, essence, 225, 146, 45, 255)
+			end
 
-			DrawAdvancedText(text_x, text_y, 0.005, 0.0028, 0.4,round(percent,1).."%", 255, 255, 255, 255, 0, 1)
+			if(showText) then
+				local percent = (essence/0.142)*100
+
+				DrawAdvancedText(text_x, text_y, 0.005, 0.0028, 0.4,round(percent,1).."%", 255, 255, 255, 255, 0, 1)
+			end
 		else
-			DrawRect(hud_x, hud_y, 0.15, 0.0149999999999998, 255, 255, 255, 200)
-			DrawRect(hud_x, hud_y, 0.142, 0.0119999999999998, 80, 80, 80, 255)
-			DrawRect(hud_x, hud_y, essence, 0.0119999999999998, 225, 146, 45, 255)
-			local percent = (essence/0.142)*100
+			if(showBar) then
+				DrawRect(hud_x, hud_y, 0.15, 0.0149999999999998, 255, 255, 255, 200)
+				DrawRect(hud_x, hud_y, 0.142, 0.0119999999999998, 80, 80, 80, 255)
+				DrawRect(hud_x, hud_y, essence, 0.0119999999999998, 225, 146, 45, 255)
+			end
 
-			DrawAdvancedText(text_x, text_y, 0.005, 0.0028, 0.4,round(percent,1).."%", 255, 255, 255, 255, 0, 1)
+			if(showText) then
+				local percent = (essence/0.142)*100
+
+				DrawAdvancedText(text_x, text_y, 0.005, 0.0028, 0.4,round(percent,1).."%", 255, 255, 255, 255, 0, 1)
+			end
 		end
 	end
 end
@@ -578,6 +660,15 @@ AddEventHandler("essence:hasBuying", function(amount)
 end)
 
 
+
+RegisterNetEvent("essence:buyCan")
+AddEventHandler("essence:buyCan", function()
+
+	GiveWeaponToPed(GetPlayerPed(-1), 0x34A67B97, currentCans+1,  0, true)
+	currentCans = currentCans +1
+end)
+
+
 RegisterNetEvent("vehicule:sendFuel")
 AddEventHandler("vehicule:sendFuel", function(bool, ess)
 
@@ -629,6 +720,8 @@ AddEventHandler("advancedFuel:setEssence", function(percent, plate, model)
 		local essenceToPercent = (essence/0.142)*65
 		SetVehicleFuelLevel(GetVehiclePedIsIn(GetPlayerPed(-1)),round(essenceToPercent))
 	end
+
+	TriggerServerEvent("advancedFuel:setEssence_s",percent,plate,model)
 end)
 
 
