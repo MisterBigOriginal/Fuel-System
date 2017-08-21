@@ -22,7 +22,7 @@ Citizen.CreateThread(function()
 				local nul, number = GetCurrentPedWeapon(GetPlayerPed(-1))
 
 				if(number == 883325847) then
-					Info(settings[lang].refeel)
+					Info(settings[lang].refuel)
 					if(IsControlJustPressed(1, 38)) then
 
 						RequestAnimDict("weapon@w_sp_jerrycan")

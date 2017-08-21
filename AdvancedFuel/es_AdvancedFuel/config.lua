@@ -17,7 +17,7 @@ settings["en"] = {
 	avionFuelStation = "Fuel station | Plane ",
 	heliFuelStation = "Fuel station | Helicopter",
 	getJerryCan = "Press ~g~E~w~ to buy a Petrol can ("..petrolCanPrice.."$)",
-	refeel = "Press ~g~E~w~ to refeel the car.",
+	refuel = "Press ~g~E~w~ to refuel the car.",
 	price = "price"
 }
 
@@ -34,7 +34,7 @@ settings["fr"] = {
 	avionFuelStation = "Station d'essence | Avions",
 	heliFuelStation = "Station d'essence | Hélicoptères",
 	getJerryCan = "Appuyez sur ~g~E~w~ pour acheter un bidon d'essence ("..petrolCanPrice.."$)",
-	refeel = "Appuyez sur ~g~E~w~ pour remplir votre voiture d'essence.",
+	refuel = "Appuyez sur ~g~E~w~ pour remplir votre voiture d'essence.",
 	price = "prix"
 }
 
