@@ -48,7 +48,11 @@ AddEventHandler("essence:setToAllPlayerEscense", function(essence, vplate, vmode
 			table.insert(serverEssenceArray,{plate=vplate,model=vmodel,es=essence})
 		end
 	end
+
+	TriggerClientEvent('essence:syncWithAllPlayers', -1, essence, vplate, vmodel)
 end)
+
+
 
 RegisterServerEvent("essence:buy")
 AddEventHandler("essence:buy", function(amount, index,e)

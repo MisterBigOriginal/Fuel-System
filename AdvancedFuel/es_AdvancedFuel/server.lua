@@ -34,6 +34,7 @@ AddEventHandler("playerDropped", function(reason)
 end)
 
 
+
 RegisterServerEvent("essence:setToAllPlayerEscense")
 AddEventHandler("essence:setToAllPlayerEscense", function(essence, vplate, vmodel)
 	local _source = source
@@ -45,7 +46,11 @@ AddEventHandler("essence:setToAllPlayerEscense", function(essence, vplate, vmode
 			table.insert(serverEssenceArray,{plate=vplate,model=vmodel,es=essence})
 		end
 	end
+
+	TriggerClientEvent('essence:syncWithAllPlayers', -1, essence, vplate, vmodel)
 end)
+
+
 
 
 RegisterServerEvent("essence:buy")
